@@ -29,7 +29,7 @@ return [
     ],
     'httpServer'        => [
         'class'    => HttpServer::class,
-        'port'     => 8888,
+        'port'     => 18306,
         'listener' => [
             'rpc' => bean('rpcServer')
         ],
@@ -65,7 +65,7 @@ return [
     ],
     'db'                => [
         'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
+        'dsn'      => 'mysql:dbname=pay;host=mysql',
         'username' => 'root',
         'password' => '123456',
     ],
@@ -78,5 +78,6 @@ return [
     ],
     'rpcServer'         => [
         'class' => ServiceServer::class,
+        'port'     => 18366,
     ],
 ];

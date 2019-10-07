@@ -10,12 +10,14 @@
 
 namespace App\Http\Controller;
 
+use App\Model\Entity\AdminNav;
 use Swoft;
 use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
+use Swoft\Http\Server\Annotation\Mapping\RequestMethod;
 use Swoft\View\Renderer;
 use Throwable;
 use function context;
@@ -30,35 +32,91 @@ class HomeController
      * @RequestMapping("/")
      * @throws Throwable
      */
-    public function index(): Response
+    public function index()
     {
-        /** @var Renderer $renderer */
-        $renderer = Swoft::getBean('view');
-        $content  = $renderer->render('home/index');
+        $data['left'] = $this->getLeftNav();
+        $data['top'] = $this->getTopNav();
 
-        return context()->getResponse()->withContentType(ContentType::HTML)->withContent($content);
+        return view('home/index', $data);
     }
 
     /**
-     * @RequestMapping("/hi")
-     *
-     * @return Response
-     * @throws SwoftException
+     * 获取菜单
+     * @return array
+     * @throws Swoft\Db\Exception\DbException
      */
-    public function hi(): Response
+    private function getLeftNav(): array
     {
-        return context()->getResponse()->withContent('hi');
+        $rows = AdminNav::where('type','=','middle')->orderBy('order')->get();
+        if ($rows) {
+            $rows = $rows->toArray();
+            return $this->toTree($rows);
+        } else {
+            return [];
+        }
     }
 
     /**
-     * @RequestMapping("/hello[/{name}]")
-     * @param string $name
-     *
-     * @return Response
-     * @throws SwoftException
+     * 获取菜单
+     * @return array
+     * @throws Swoft\Db\Exception\DbException
      */
-    public function hello(string $name): Response
+    private function getTopNav(): array
     {
-        return context()->getResponse()->withContent('Hello' . ($name === '' ? '' : ", {$name}"));
+        $rows = AdminNav::where('type','=','top')->orderBy('order')->get();
+        if ($rows) {
+            $rows = $rows->toArray();
+            return $this->toTree($rows);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * 把返回的数据集转换成Tree
+     * @param array $list 要转换的数据集
+     * @param string $pk
+     * @param string $pid parent标记字段
+     * @param string $child
+     * @param int $root
+     * @return array
+     */
+    function toTree($list, $pk = 'id', $pid = 'pid', $child = '_child', $root = 0)
+    {
+        // 创建Tree
+        $tree = array();
+        if (is_array($list)) {
+            // 创建基于主键的数组引用
+            $refer = array();
+            foreach ($list as $key => $data) {
+                $refer[$data[$pk]] =& $list[$key];
+            }
+
+            foreach ($list as $key => $data) {
+                // 判断是否存在parent
+                $parentId = $data[$pid];
+                if ($root == $parentId) {
+                    $tree[] =& $list[$key];
+                } else {
+                    if (isset($refer[$parentId])) {
+                        $parent =& $refer[$parentId];
+                        $parent[$child][] =& $list[$key];
+                    }
+                }
+            }
+        }
+        return $tree;
+    }
+
+    /**
+     * 首页统计
+     * @RequestMapping("/home",method={RequestMethod::GET})
+     */
+    public function home()
+    {
+        $data['left'] = $this->getLeftNav();
+        $data['top'] = $this->getTopNav();
+
+        return view('home/home', $data);
     }
 }

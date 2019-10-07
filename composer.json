@@ -34,7 +34,7 @@
     "swoft/breaker": "~2.0.0",
     "swoft/crontab": "~2.0.0",
     "swoft/devtool": "~2.0.0",
-    "ctfang/swoft-admin": "^0.0.4"
+    "ctfang/swoft-admin": "dev-master"
   },
   "require-dev": {
     "swoft/swoole-ide-helper": "dev-master",

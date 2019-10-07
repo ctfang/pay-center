@@ -8,6 +8,8 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
+define("__PUBLIC__","http://pay.com");
+
 function user_func(): string
 {
     return 'hello';
