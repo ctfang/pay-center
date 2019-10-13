@@ -29,7 +29,7 @@ return [
     ],
     'httpServer'        => [
         'class'    => HttpServer::class,
-        'port'     => 18306,
+        'port'     => env('HTTP_PORT',18306),
         'listener' => [
             'rpc' => bean('rpcServer')
         ],
@@ -54,8 +54,6 @@ return [
     'httpDispatcher'    => [
         // Add global http middleware
         'middlewares'      => [
-            \App\Http\Middleware\FavIconMiddleware::class,
-            // \Swoft\Whoops\WhoopsMiddleware::class,
             // Allow use @View tag
             \Swoft\View\Middleware\ViewMiddleware::class,
         ],
