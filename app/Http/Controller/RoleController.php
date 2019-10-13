@@ -81,12 +81,29 @@ class RoleController
     }
 
     /**
+     * 编辑角色GET
+     * @RequestMapping("/role/edit",method={RequestMethod::GET})
+     * @param Request $request
+     * @return string
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\DbException
+     * @throws \Throwable
+     */
+    public function update(Request $request)
+    {
+        return view('role/edit');
+    }
+
+    /**
      * 编辑角色POST
      * @RequestMapping("/role/edit",method={RequestMethod::POST})
      * @param Request $request
      * @return string
      * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\Co
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\DbException
+     */
     public function edit(Request $request)
     {
         AdminRole::where('id','=',(int)$request->get('id',0))->update($request->post());
